@@ -2,51 +2,21 @@ import React, { Component, Fragment } from 'react';
 import Instructions from './Instructions';
 import PlayerInput from './PlayerInput';
 import PlayerPreview from './PlayerPreview';
-import Results from '../Results/Results';
 import { ThemeConsumer } from '../../contexts/theme';
+import { Link, Route } from 'react-router-dom';
 
 class Battle extends Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      playerOne: null,
-      playerTwo: null,
-      results: false
-    }
-
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleReset = this.handleReset.bind(this)
+  state = {
+    playerOne: null,
+    playerTwo: null
   }
 
-  handleSubmit(id, player) {
-    this.setState({
-      [id]: player
-    })
-  }
+  handleSubmit = (id, player) => this.setState({ [id]: player })
 
-  handleReset(id) {
-    this.setState({
-      [id]: null
-    })
-  }
+  handleReset = (id) => this.setState({ [id]: null })
 
   render() {
-    const { state: { playerOne, playerTwo, results }, handleSubmit, handleReset } = this;
-
-    if(results) {
-      return (
-        <Results 
-          playerOne={playerOne} 
-          playerTwo={playerTwo}
-          onReset={() => this.setState({
-            playerOne: null,
-            playerTwo: null,
-            results: false
-          })}
-        />
-      )
-    }
+    const { state: { playerOne, playerTwo }, handleSubmit, handleReset } = this;
 
     return (
       <Fragment>
@@ -84,11 +54,16 @@ class Battle extends Component {
           <ThemeConsumer>
             {({ theme }) => (
               playerOne && playerTwo &&
-              <button 
-                className={theme === 'light' ? 'btn btn-dark battle-btn' : 'btn btn-light battle-btn'}
-                onClick={() => this.setState({ results: true })}
-              >
-                Battle
+              <button className={theme === 'light' ? 'btn btn-dark battle-btn' : 'btn btn-light battle-btn'}>
+                <Link 
+                  to={{
+                    pathname: '/battle/results',
+                    search: `?playerOne=${playerOne}&playerTwo=${playerTwo}`
+                  }}
+                  className='nav-link'
+                >
+                  Battle
+                </Link>
               </button>
             )}
           </ThemeConsumer>

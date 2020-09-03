@@ -1,24 +1,22 @@
 import React, { Component } from 'react';
-import { string, func } from 'prop-types';
 import { battle } from '../../utils/api';
+import queryString from 'query-string';
+import { Link } from 'react-router-dom';
 
 import Card from '../Card';
 import ProfileList from './ProfileList';
 import Preloader from '../Preloader/Preloader';
 
 class Results extends Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      winner: null,
-      loser: null,
-      error: null,
-      loading: true
-    }
+  state = {
+    winner: null,
+    loser: null,
+    error: null,
+    loading: true
   }
+  
   componentDidMount() {
-    const {playerOne, playerTwo} = this.props;
+    const {playerOne, playerTwo} = queryString.parse(this.props.location.search);
 
     battle([playerOne, playerTwo])
       .then(results => (
@@ -69,19 +67,14 @@ class Results extends Component {
         </div>
         <button
           className='btn btn-dark battle-btn'
-          onClick={this.props.onReset}
         >
-          Reset
+          <Link to='/battle' className='nav-link'>
+            Reset
+          </Link>
         </button>
       </React.Fragment>
     );
   }
-}
-
-Results.propTypes = {
-  playerOne: string.isRequired,
-  playerTwo: string.isRequired,
-  onReset: func.isRequired
 }
 
 export default Results;
