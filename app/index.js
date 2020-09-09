@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import { ThemeProvider } from './contexts/theme';
+import ThemeContext from './contexts/theme';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import NotFound from './components/NotFound';
 import Nav from './components/Nav';
@@ -28,7 +28,7 @@ class App extends Component {
   render() {
     return (
       <Router>
-        <ThemeProvider value={this.state}>
+        <ThemeContext.Provider value={this.state}>
           <div className={this.state.theme}>
             <div className='container'>
               <Nav />
@@ -42,7 +42,7 @@ class App extends Component {
               </React.Suspense>
             </div>
           </div>
-        </ThemeProvider>
+        </ThemeContext.Provider>
       </Router>
     );
   }

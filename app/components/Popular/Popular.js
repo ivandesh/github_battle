@@ -1,73 +1,57 @@
-import React, { Component, Fragment } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { fetchPopularRepos } from '../../utils/api';
 
 import LanguagesNav from './LanguagesNav';
 import ReposGrid from './ReposGrid';
 import Preloader from '../Preloader/Preloader';
 
-class Popular extends Component {
-  state = {
-    selectedLanguage: 'All',
-    repos: {},
-    error: null,
-  }
+const Popular = () => {
+  const [selectedLanguage, setSelectedLanguage] = useState('All');
+  const [repos, setRepos] = useState({});
+  const [error, setError] = useState(null);
 
-  componentDidMount() {
-    this.updateLanguage(this.state.selectedLanguage)
-  }
+  useEffect(() => {
+    updateLanguage(selectedLanguage)
+  }, [])
 
-  updateLanguage = (selectedLanguage) => {
-    this.setState({ 
-      selectedLanguage,
-      error: null
-     })
-    
-    if(!this.state.repos[selectedLanguage]) {
-      fetchPopularRepos(selectedLanguage)
-      .then(data => {
-        this.setState(({ repos }) => ({
-           repos: {
-             ...repos,
-             [selectedLanguage]: data
-           }
-        }))
-      })
-      .catch(error => {
-        this.setState({
-          error: error
+  const updateLanguage = (lang) => {
+    setSelectedLanguage(lang);
+    setError(null);
+
+    if(!repos[lang]) {
+      fetchPopularRepos(lang)
+        .then(data => {
+          setRepos(repos => {
+            return {
+              ...repos,
+              [lang]: data
+            }
+          })
         })
-      })
+        .catch(error => {
+          setError(error)
+        })
     }
   }
 
-  isLoading = () => {
-    const { selectedLanguage, repos, error } = this.state;
+  const isLoading = () => {
     return !repos[selectedLanguage] && error === null
   }
 
-  render() {
+  return (
+    <Fragment>
+    <LanguagesNav 
+      selected={selectedLanguage}
+      onLanguageUpdate={updateLanguage}
+    />
 
-    const {
-      selectedLanguage,
-      repos,
-      error,
-    } = this.state
+    {isLoading() && <Preloader text='Fetching Repos' color='#5bc0de' />}
 
-    return (
-      <Fragment>
-        <LanguagesNav 
-          selected={selectedLanguage}
-          onLanguageUpdate={this.updateLanguage}
-        />
+    {error && <p>{error}</p>}
 
-        {this.isLoading() && <Preloader text='Fetching Repos' color='#5bc0de' />}
-
-        {error && <p>{error}</p>}
-
-        {repos[selectedLanguage] && <ReposGrid repos={repos[selectedLanguage]} />}
-      </Fragment>
-    );
-  }
+    {repos[selectedLanguage] && <ReposGrid repos={repos[selectedLanguage]} />}
+  </Fragment>
+  )
 }
 
 export default Popular;

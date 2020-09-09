@@ -1,46 +1,36 @@
-import React, { Component } from 'react';
+import React, { useState, useContext } from 'react';
 import { string, func } from 'prop-types';
-import { ThemeConsumer } from '../../contexts/theme';
+import ThemeContext from '../../contexts/theme';
 
-class PlayerInput extends Component {
-  state = {
-    username: ''
-  }
+const PlayerInput = ({label, onSubmit}) => {
+  const {theme} = useContext(ThemeContext);
+  const [username, setUsername] = useState('')
 
-  handleChange = (e) => this.setState({ username: event.target.value })
-
-  handleSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    this.props.onSubmit(this.state.username)
+    onSubmit(username)
   }
-
-  render() {
-    return(
-      <ThemeConsumer>
-        {({ theme }) => (
-          <form className='flex column player' onSubmit={this.handleSubmit}>
-            <label className='player-label' htmlFor="username">{this.props.label}</label>
-            <div className="input-field flex">
-              <input 
-                type="text"
-                className={`input-${theme}`}
-                value={this.state.username}
-                onChange={this.handleChange}
-              />
-              <button 
-                type='submit' 
-                className={theme === 'light' ? 'btn-dark' : 'btn-light'} 
-                disabled={!this.state.username}
-              >
-                Submit
-                </button>
-            </div>
-          </form>
-        )}
-      </ThemeConsumer>
-    )
-  }
+  return (
+    <form className='flex column player' onSubmit={handleSubmit}>
+      <label className='player-label' htmlFor="username">{label}</label>
+      <div className="input-field flex">
+        <input 
+          type="text"
+          className={`input-${theme}`}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <button 
+          type='submit' 
+          className={theme === 'light' ? 'btn-dark' : 'btn-light'} 
+          disabled={!username}
+        >
+          Submit
+          </button>
+      </div>
+    </form>
+  )
 }
 
 PlayerInput.propTypes = {
